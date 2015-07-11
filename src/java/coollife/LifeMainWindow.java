@@ -3,7 +3,6 @@ package coollife;
 import firststep.Canvas;
 import firststep.Color;
 import firststep.DoubleXY;
-import firststep.Transform;
 import firststep.Window;
 
 
@@ -11,13 +10,18 @@ public class LifeMainWindow extends Window {
 	
 	private static final String APPNAME = "Cool Life";
 	
-	private static float fps = 25.0f;
 	private int mouseI, mouseJ;
 	private boolean isPaused;
 	private boolean isDown;
 	private boolean clickedColor;
 
 	private Cells field;
+
+	public LifeMainWindow() {
+		super (APPNAME, 600, 400);
+		setBackground(new Color(0.2f, 0.2f, 0.2f, 1.0f));
+		field = new Cells(100, 70);
+	}
 	
 	@Override
 	public void key(Key key, int scancode, KeyState state, Modifiers modifiers) {
@@ -103,7 +107,7 @@ public class LifeMainWindow extends Window {
 	
 	@Override
 	protected void frame(Canvas cnv) {
-		float k = calcScale(getWidth(), getHeight());
+ 		float k = calcScale(getWidth(), getHeight());
 	    
 	    float x0 = getWidth() / 2 - (field.getWidth() * k / 2);
 	    float y0 = getHeight() / 2 - (field.getHeight() * k / 2);
@@ -162,17 +166,5 @@ public class LifeMainWindow extends Window {
 		frameIndex ++;
 		cellUnderMouse(getWidth(), getHeight());
 	}
-
 	
-	public LifeMainWindow() {
-		super (APPNAME, 600, 400);
-		setBackground(new Color(0.2f, 0.2f, 0.2f, 1.0f));
-		field = new Cells(100, 70);
-	}
-	
-	public static void main(String... args) {
-		LifeMainWindow mainWindow = new LifeMainWindow();
-		
-		Window.loop(fps);
-	}
 }
