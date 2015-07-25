@@ -2,16 +2,14 @@ package coollife.core.geometry;
 
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealLinearOperator;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
 import org.apache.commons.math3.ode.nonstiff.RungeKuttaIntegrator;
 
+import coollife.core.math.BoundaryConditionProblem;
 import coollife.core.math.GeodesicEquation;
-import coollife.core.math.LinearSolver;
 
 
 public abstract class Topology {
@@ -43,46 +41,20 @@ public abstract class Topology {
 		
 		GeodesicEquation eq = new GeodesicEquation( this );
 		EulerIntegrator integrator = new EulerIntegrator(1000);
+		
 		int eqDim = eq.getDimension();
-		
-		double[][] Basis = new double[ eqDim ][ eqDim ];
-		for ( int i = 0; i < eqDim; i++) Basis[i][i] = 1;
-		double[][] basis = Basis.clone();
-		
-		for ( int i = 0; i < eqDim; i++) {
-			integrator.integrate( eq, 0, basis[i], 1, basis[i]);
-		}
-		
-		double[] coeff = new double[eqDim];
-		double[] finish = new double[dim];
-		for ( int i = 0; i < dim; i++) {
-			finish[i] = p2[i];
-			coeff[i] = p1[i];
-			for ( int j = 0; j < dim; j++) {
-				finish[j] -= basis[i][j] * p1[i];
-			}
-		}	
-		
-		double[][] dest = new double[dim][dim];
-		MatrixUtils.createRealMatrix(basis).copySubMatrix( 0, dim - 1, dim, eqDim - 1, dest);
-		RealVector vector =  MatrixUtils.createRealVector(finish);
-		RealLinearOperator matrix = new Array2DRowRealMatrix( dest );
-		LinearSolver solver = new LinearSolver(1000);
-		
-		double[] last = solver.solve(matrix, vector).toArray();
-		
-		for ( int i = 0; i < dim; i++) {
-			coeff[i + dim] = last[i];
-		}
-		
-		double[] realInitialConditions = new double[eqDim];
-		basis = Basis.clone();
-		
-		for ( int i = 0; i < eqDim; i++) {
-			for ( int j = 0; j < eqDim; j++) {
-				realInitialConditions[j] -= basis[i][j] * coeff[i];
+		double[] left = new double[eqDim];
+		double[] right = new double[eqDim];
+		for (int i = 0; i < eqDim; i++) {
+			if ( i < dim ) {
+				left[i] = p1[i];
+				right[i] = p2[i];
+			} else {
+				left[i] = right[i] = BoundaryConditionProblem.NOT_DETERMINED;
 			}
 		}
+		
+		double[] realInitialConditions = BoundaryConditionProblem.convertToInitialConditianProblem(eq, left, right);
 		
 		SimpsonIntegrator integral = new SimpsonIntegrator();
 		LengthFunction func = new LengthFunction( integrator, realInitialConditions, eq );
