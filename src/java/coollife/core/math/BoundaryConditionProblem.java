@@ -1,8 +1,9 @@
 package coollife.core.math;
 
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
+import org.apache.commons.math3.linear.DecompositionSolver;
 import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealLinearOperator;
+import org.apache.commons.math3.linear.QRDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
@@ -59,9 +60,10 @@ public class BoundaryConditionProblem {
 		}
 		
 		RealVector vector =  MatrixUtils.createRealVector( b );
-		RealLinearOperator matrix = new Array2DRowRealMatrix( A );
-		LinearSolver solver = new LinearSolver(1000);
-		double[] x = solver.solve(matrix, vector).toArray();
+		RealMatrix matrix = MatrixUtils.createRealMatrix( A );
+		QRDecomposition qr = new QRDecomposition( matrix );
+		DecompositionSolver solver = qr.getSolver();		
+		double[] x = solver.solve(vector).toArray();
 		
 		for ( int i = 0, j = 0; i < eqDim; i++) {
 			if ( coeff[i] == NOT_DETERMINED ) {
@@ -70,13 +72,7 @@ public class BoundaryConditionProblem {
 			}
 		}
 		
-		double[] realInitialConditions = new double[eqDim];
-		for ( int i = 0; i < eqDim; i++ ) {
-			for ( int j = 0; j < eqDim; j++ ) {
-				realInitialConditions[i] += basis[j][i] * coeff[j];
-			}
-		}
-		return realInitialConditions;
+		return coeff;
 	}
 	
 	private static void checkSanity( FirstOrderDifferentialEquations eq, double[] left, double right[] ) {

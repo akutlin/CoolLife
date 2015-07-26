@@ -77,7 +77,7 @@ public abstract class Topology {
 		}
 		
 		public double value(double x) {
-			double[] p = integrator.singleStep(eq, 0, initialConditions, x);
+			double[] p = cutPoint( integrator.singleStep(eq, 0, initialConditions, x) );
 			double[][] metrics = getMetrics( p );
 			RealMatrix A = MatrixUtils.createRealMatrix(metrics);
 			RealVector R = MatrixUtils.createRealVector( p );
@@ -85,6 +85,13 @@ public abstract class Topology {
 			toRet = Math.sqrt(toRet);
 			return toRet;
 	    }
+		
+		private double[] cutPoint( double[] p ) {
+			checkSanity(p, 2 * dim);
+			double[] toRet = new double[ dim ];
+			for ( int i = 0; i < dim; i++) toRet[i] = p[i + dim]; 
+			return toRet;
+		}
 	}
 	
 	protected static void checkSanity( double[] coordinates , int dim) {

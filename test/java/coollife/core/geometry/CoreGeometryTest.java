@@ -4,10 +4,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class TopologyTest {
+public class CoreGeometryTest {
 
 	@Test
-	public void getDistanceTest() {
+	public void getDistanceTopologyTest() {
 		
 		int dim = 3;
 		
@@ -22,7 +22,7 @@ public class TopologyTest {
 			@Override
 			public double[][] getMetrics(double[] point) {
 				double[][] m = new double[dim][dim];
-				for ( int i = 0; i < dim; i++) m[i][i] = 0;
+				for ( int i = 0; i < dim; i++) m[i][i] = 1;
 				return m;
 			}
 
