@@ -6,7 +6,6 @@ import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
-import org.apache.commons.math3.ode.nonstiff.RungeKuttaIntegrator;
 
 import coollife.core.math.BoundaryConditionProblem;
 import coollife.core.math.GeodesicEquation;
@@ -16,9 +15,9 @@ public abstract class Topology {
 	
 	protected static int dim;
 	
-	public abstract double[][][] getChristoffelSymbolOfTheFirstKind( double[] point );
-	public abstract double[][] getMetrics( double[] point );
-	public abstract double[] transform( double[] r);
+	public abstract double[][][] getChristoffelSymbolOfTheFirstKind( double[] p );
+	public abstract double[][] getMetrics( double[] p );
+	public abstract void transform( double[] p );
 		
 	public Topology(int dim) {
 		if ( dim < 0 ) {
@@ -36,8 +35,8 @@ public abstract class Topology {
 		checkSanity(p1, dim );
 		checkSanity(p2, dim );
 		
-		p1 = transform(p1);
-		p2 = transform(p2);
+		transform(p1);
+		transform(p2);
 		
 		GeodesicEquation eq = new GeodesicEquation( this );
 		EulerIntegrator integrator = new EulerIntegrator(1000);
@@ -55,43 +54,32 @@ public abstract class Topology {
 		}
 		
 		double[] realInitialConditions = BoundaryConditionProblem.convertToInitialConditianProblem(eq, left, right);
+				
+		UnivariateFunction path = new UnivariateFunction() {
+			
+			@Override
+			public double value(double x) {
+				double[] p = cutPoint( integrator.singleStep(eq, 0, realInitialConditions, x) );
+				double[][] metrics = getMetrics( p );
+				RealMatrix A = MatrixUtils.createRealMatrix(metrics);
+				RealVector R = MatrixUtils.createRealVector( p );
+				double toRet = A.operate(R).dotProduct(R);
+				toRet = Math.sqrt(toRet);
+				return toRet;
+		    }
+			
+			private double[] cutPoint( double[] p ) {
+				checkSanity(p, 2 * dim);
+				double[] toRet = new double[ dim ];
+				for ( int i = 0; i < dim; i++) toRet[i] = p[i + dim]; 
+				return toRet;
+			}
+		};
 		
 		SimpsonIntegrator integral = new SimpsonIntegrator();
-		LengthFunction func = new LengthFunction( integrator, realInitialConditions, eq );
-		double lenth = integral.integrate(1000, func, 0, 1);
+		double lenth = integral.integrate(1000, path, 0, 1);
 		return lenth;
 				
-	}
-	
-	private class LengthFunction implements UnivariateFunction {
-	 
-		private RungeKuttaIntegrator integrator;
-		private double[] initialConditions;
-		private GeodesicEquation eq;
-		
-		public LengthFunction(RungeKuttaIntegrator integrator, double[] initialConditions, GeodesicEquation eq) {
-			checkSanity( initialConditions, eq.getDimension() );
-			this.integrator = integrator;
-			this.initialConditions = initialConditions;
-			this.eq = eq;
-		}
-		
-		public double value(double x) {
-			double[] p = cutPoint( integrator.singleStep(eq, 0, initialConditions, x) );
-			double[][] metrics = getMetrics( p );
-			RealMatrix A = MatrixUtils.createRealMatrix(metrics);
-			RealVector R = MatrixUtils.createRealVector( p );
-			double toRet = A.operate(R).dotProduct(R);
-			toRet = Math.sqrt(toRet);
-			return toRet;
-	    }
-		
-		private double[] cutPoint( double[] p ) {
-			checkSanity(p, 2 * dim);
-			double[] toRet = new double[ dim ];
-			for ( int i = 0; i < dim; i++) toRet[i] = p[i + dim]; 
-			return toRet;
-		}
 	}
 	
 	protected static void checkSanity( double[] coordinates , int dim) {
