@@ -32,8 +32,8 @@ public abstract class Topology {
 	
 	public double getDistance( double[] p1, double[] p2 ) {
 		
-		checkSanity(p1, dim );
-		checkSanity(p2, dim );
+		defaultCheckSanity(p1, dim );
+		defaultCheckSanity(p2, dim );
 		
 		transform(p1);
 		transform(p2);
@@ -69,7 +69,7 @@ public abstract class Topology {
 		    }
 			
 			private double[] cutPoint( double[] p ) {
-				checkSanity(p, 2 * dim);
+				defaultCheckSanity(p, 2 * dim);
 				double[] toRet = new double[ dim ];
 				for ( int i = 0; i < dim; i++) toRet[i] = p[i + dim]; 
 				return toRet;
@@ -82,7 +82,7 @@ public abstract class Topology {
 				
 	}
 	
-	protected static void checkSanity( double[] coordinates , int dim) {
+	protected static void defaultCheckSanity( double[] coordinates , int dim) {
 		if ( coordinates == null ) {
 			throw new NullPointerException();
 		} else if ( coordinates.length != dim ) {

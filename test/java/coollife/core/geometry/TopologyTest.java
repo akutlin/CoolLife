@@ -2,6 +2,7 @@ package coollife.core.geometry;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TopologyTest {
@@ -12,6 +13,7 @@ public class TopologyTest {
 		int maxDim = 6;
 		
 		for (int dim = 1; dim < maxDim; dim++) {
+			
 			Topology euqlideanSpace = new Topology(dim) {
 
 				@Override
@@ -72,7 +74,7 @@ public class TopologyTest {
 
 			@Override
 			public void transform(double[] r) {
-				checkSanity(r, dim);
+				defaultCheckSanity(r, dim);
 				while (r[0] < 0) r[0] += 2 * Math.PI;
 				r[0] = r[0] % (2 * Math.PI);
 				while (r[1] < 0) r[1] += Math.PI;
@@ -86,6 +88,7 @@ public class TopologyTest {
 	}
 	
 	@Test
+	@Ignore
 	public void getDistanceOnSphere2DSpecialPoint() {
 		
 		int dim = 2;
@@ -118,7 +121,7 @@ public class TopologyTest {
 
 			@Override
 			public void transform(double[] r) {
-				checkSanity(r, dim);
+				defaultCheckSanity(r, dim);
 				while (r[0] < 0) r[0] += 2 * Math.PI;
 				r[0] = r[0] % (2 * Math.PI);
 				while (r[1] < 0) r[1] += Math.PI;
