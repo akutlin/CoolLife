@@ -15,8 +15,14 @@ public abstract class Topology {
 	
 	protected static int dim;
 	
+	private GeodesicEquation eq;
+	private EulerIntegrator evaluator;
+	private SimpsonIntegrator integrator;
+	private PathFunction path;
+	
 	public abstract double[][][] getChristoffelSymbolOfTheFirstKind( double[] p );
 	public abstract double[][] getMetrics( double[] p );
+	protected abstract double getSeed( double[] p );
 	public abstract void transform( double[] p );
 		
 	public Topology(int dim) {
@@ -24,6 +30,10 @@ public abstract class Topology {
 			throw new IllegalArgumentException();
 		}
 		Topology.dim = dim;
+		eq = new GeodesicEquation( this );
+		evaluator = new EulerIntegrator(1000);
+		integrator = new SimpsonIntegrator();
+		path = new PathFunction();
 	}
 	
 	public final int getDimension() {
@@ -37,10 +47,7 @@ public abstract class Topology {
 		
 		transform(p1);
 		transform(p2);
-		
-		GeodesicEquation eq = new GeodesicEquation( this );
-		EulerIntegrator integrator = new EulerIntegrator(1000);
-		
+				
 		int eqDim = eq.getDimension();
 		double[] left = new double[eqDim];
 		double[] right = new double[eqDim];
@@ -53,33 +60,119 @@ public abstract class Topology {
 			}
 		}
 		
-		double[] realInitialConditions = BoundaryConditionProblem.convertToInitialConditianProblem(eq, left, right);
+		double[] realInitialConditions = BoundaryConditionProblem.convertToInitialConditianProblem(eq, left, right);	
+		path.setState(realInitialConditions);
+		return integrator.integrate(1000, path, 0, 1);
 				
-		UnivariateFunction path = new UnivariateFunction() {
-			
-			@Override
-			public double value(double x) {
-				double[] p = cutPoint( integrator.singleStep(eq, 0, realInitialConditions, x) );
-				double[][] metrics = getMetrics( p );
-				RealMatrix A = MatrixUtils.createRealMatrix(metrics);
-				RealVector R = MatrixUtils.createRealVector( p );
-				double toRet = A.operate(R).dotProduct(R);
-				toRet = Math.sqrt(toRet);
-				return toRet;
-		    }
-			
-			private double[] cutPoint( double[] p ) {
-				defaultCheckSanity(p, 2 * dim);
-				double[] toRet = new double[ dim ];
-				for ( int i = 0; i < dim; i++) toRet[i] = p[i + dim]; 
-				return toRet;
-			}
-		};
+	}
+	
+	protected double getPathLength( double[] state, double t1, double t2 ) {
+		path.setState(state);
+		return integrator.integrate(1000, path, t1, t2);
+	}
+	
+	public void translate( double[] p0, double[] v0, double length ) {
 		
-		SimpsonIntegrator integral = new SimpsonIntegrator();
-		double lenth = integral.integrate(1000, path, 0, 1);
-		return lenth;
-				
+		defaultCheckSanity(p0, dim);
+		defaultCheckSanity(v0, dim);
+		transform(p0);
+		
+		int eqDim = eq.getDimension();
+		double[] initialState = new double[ eqDim ];
+		for ( int i = 0; i < eqDim; i++ ) {
+			initialState[i] = i < dim ? p0[i] : v0[i - dim];
+		}
+
+		double[] state = initialState.clone();
+		path.setState(state);
+		double seed = getSeed(p0);
+		seed = Double.isInfinite(seed) ? 1 : seed;
+		double step = seed  * seed / getPathLength( state, 0, seed);
+		
+		double[] stateDot = new double[eqDim];
+		double[] stateDotDot = new double[eqDim];
+		eq.computeDerivatives( 0, state, stateDotDot);
+		eq.computeDerivatives( step, state, stateDot);
+		for ( int i = 0; i < eqDim; i++) {
+			state[i] += step * stateDot[i];
+		}
+		
+		double v, f, x = step, l = 0;
+		
+		while ( l < length ) {
+			
+			v = 0; f = 0;
+			for ( int i = 0; i < eqDim; i++) {
+				stateDotDot[i] = (stateDot[i] - stateDotDot[i]);
+				v += stateDotDot[i] * stateDotDot[i];
+				f += stateDot[i] * stateDot[i];
+			}
+			v = Math.sqrt(v) / step;
+			f = Math.sqrt(f);
+			if ( f == 0) throw new RuntimeException(); 
+			step = v == 0 ? step : f/v;
+			
+			l += path.value(x) * step;
+			x += step;
+			eq.computeDerivatives(x, state, stateDot);
+			for ( int i = 0; i < eqDim; i++) {
+				state[i] += step * stateDot[i];
+			}
+			
+		}
+		
+		l = getPathLength( initialState, 0, x);
+		double shift = length - l;
+		
+		l = getPathLength( state, shift, 0);
+		if ( l != 0 ) {
+			step = shift * shift / l;
+			eq.computeDerivatives( -step, state, stateDot);
+			for ( int i = 0; i < eqDim; i++) {
+				state[i] -= step * stateDot[i];
+			}
+		}
+		
+		for ( int i = 0; i < dim; i++) {
+			p0[i] = state[i];
+			v0[i] = state[dim + i];
+		}
+		
+		transform(p0);
+	}
+	
+	private class PathFunction implements UnivariateFunction {
+		
+		private double[] state = new double[ eq.getDimension() ];
+		
+		@Override
+		public double value(double x) {
+			double[] p = evaluator.singleStep(eq, 0, state, x);
+			double[][] metrics = getMetrics( getPoint(p) );
+			RealMatrix A = MatrixUtils.createRealMatrix(metrics);
+			RealVector R = MatrixUtils.createRealVector( getVelocity(p) );
+			double toRet = A.operate(R).dotProduct(R);
+			toRet = Math.sqrt(toRet);
+			return toRet;
+	    }
+		
+		public void setState( double[] state ) {
+			this.state = state;
+		}
+		
+		public double[] getPoint( double[] p ) {
+			defaultCheckSanity(p, 2 * dim);
+			double[] toRet = new double[ dim ];
+			for ( int i = 0; i < dim; i++) toRet[i] = p[i]; 
+			return toRet;
+		}
+		
+		public double[] getVelocity( double[] p ) {
+			defaultCheckSanity(p, 2 * dim);
+			double[] toRet = new double[ dim ];
+			for ( int i = 0; i < dim; i++) toRet[i] = p[i + dim]; 
+			return toRet;
+		}
 	}
 	
 	protected static void defaultCheckSanity( double[] coordinates , int dim) {

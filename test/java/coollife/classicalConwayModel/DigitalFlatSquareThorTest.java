@@ -19,11 +19,58 @@ public class DigitalFlatSquareThorTest {
 	}
 	
 	@Test
+	public void transform() {
+		DigitalFlatSquareThor testObject = new DigitalFlatSquareThor( 100, 200 );
+		
+		double[] p = new double[] { 36,78 };
+		testObject.transform(p);
+		assertEquals( 36, p[0], 0);
+		assertEquals( 78, p[1], 0);
+		
+		p = new double[] { 36, 278 };
+		testObject.transform(p);
+		assertEquals( 36, p[0], 0);
+		assertEquals( 78, p[1], 0);
+		
+		p = new double[] { 136, 278 };
+		testObject.transform(p);
+		assertEquals( 36, p[0], 0);
+		assertEquals( 78, p[1], 0);
+		
+		p = new double[] { -164, -122 };
+		testObject.transform(p);
+		assertEquals( 36, p[0], 0);
+		assertEquals( 78, p[1], 0);
+		
+		p = new double[] { -164 - 1000, 278 };
+		testObject.transform(p);
+		assertEquals( 36, p[0], 0);
+		assertEquals( 78, p[1], 0);
+		
+		p = new double[] { 36.4, 77.5 };
+		testObject.transform(p);
+		assertEquals( 36, p[0], 0);
+		assertEquals( 78, p[1], 0);
+	}
+	
+	@Test
 	public void getDistance() {
 		DigitalFlatSquareThor testObject = new DigitalFlatSquareThor( 100, 200 );
 		assertEquals( 100 ,testObject.getDistance(
-				new double[] { 50.3, 50.9 }, 
+				new double[] { 50.3, 49.9 }, 
 				new double[] { 125, -50 }) , 0.0000000000001);
+	}
+	
+	@Test
+	public void translate() {
+		DigitalFlatSquareThor testObject = new DigitalFlatSquareThor( 100, 200 );
+		double[] p = new double[] { 104, 37 };
+		double[] v = new double[] { -1, -5 };
+		testObject.translate(p, v, 73);
+		assertEquals( 89, p[0], 0.001);
+		assertEquals( 164, p[1], 0.001);
+		assertEquals( -1, v[0], 0.001);
+		assertEquals( -5, v[1], 0.001);
 	}
 
 }

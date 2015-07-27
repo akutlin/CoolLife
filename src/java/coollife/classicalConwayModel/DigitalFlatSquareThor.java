@@ -36,7 +36,7 @@ public class DigitalFlatSquareThor extends Topology {
 	 */
 	@Override
 	public double[][][] getChristoffelSymbolOfTheFirstKind(double[] point) {
-		return null;
+		return new double[dim][dim][dim];
 	}
 
 	/**
@@ -44,7 +44,15 @@ public class DigitalFlatSquareThor extends Topology {
 	 */
 	@Override
 	public double[][] getMetrics(double[] point) {
-		return null;
+		return new double[][] {
+				{1,0}, 
+				{0,1}
+		};
+	}
+	
+	@Override
+	protected double getSeed(double[] p) {
+		return 1;
 	}
 	
 	/**
@@ -54,9 +62,9 @@ public class DigitalFlatSquareThor extends Topology {
 	public void transform(double[] r) {
 		defaultCheckSanity( r , dim );
 		while (r[0] < 0) r[0] += xMax;
-		r[0] = (int) r[0] % xMax;
+		r[0] = Math.round( r[0] % xMax );
 		while (r[1] < 0) r[1] += yMax;
-		r[1] = (int) r[1] % yMax;
+		r[1] = Math.round( r[1] % yMax );
 	}
 	
 	@Override
@@ -65,6 +73,15 @@ public class DigitalFlatSquareThor extends Topology {
 		transform(p2);
 		double[] delta = new double[]{ Math.abs( p2[0] - p1[0] ), Math.abs( p2[1] - p1[1] )};
 		return delta[1] > delta[0] ? delta[1] : delta[0];
+	}
+	
+	@Override
+	public double getPathLength( double[] state, double t1, double t2) {
+		defaultCheckSanity( state, 4);
+		double[] p = new double[] { state[0], state[1] };
+		transform(p);
+		double v = Math.abs(state[2]) > Math.abs(state[3]) ? state[2] : state[3];
+		return Math.round( Math.abs( v * (t2 - t1)) );
 	}
 
 }

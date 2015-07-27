@@ -1,5 +1,7 @@
 package coollife;
 
+import coollife.classicalConwayModel.DigitalFlatSquareThor;
+import coollife.classicalConwayModel.DigitalFlatSquareThorMapper;
 import firststep.Canvas;
 import firststep.Color;
 import firststep.DoubleXY;
@@ -14,13 +16,18 @@ public class LifeMainWindow extends Window {
 	private boolean isPaused;
 	private boolean isDown;
 	private boolean clickedColor;
+	
+	float k = 0, x0 = 0, y0 = 0;
 
 	private Cells field;
+    private DigitalFlatSquareThor thor;
+    private DigitalFlatSquareThorMapper mapper;
 
 	public LifeMainWindow() {
-		super (APPNAME, 600, 400);
-		setBackground(new Color(0.2f, 0.2f, 0.2f, 1.0f));
-		field = new Cells(100, 70);
+		super (APPNAME, 600, 400, new Color(0.2f, 0.2f, 0.2f, 1.0f));
+		field = new Cells(50, 35);
+		thor = new DigitalFlatSquareThor(field.getWidth(), field.getHeight());
+		mapper = new DigitalFlatSquareThorMapper( thor );
 	}
 	
 	@Override
@@ -107,23 +114,29 @@ public class LifeMainWindow extends Window {
 	
 	@Override
 	protected void frame(Canvas cnv) {
- 		float k = calcScale(getWidth(), getHeight());
+		
+		boolean changed = false;
+		
+ 		changed = k != (k = calcScale(getWidth(), getHeight()));
+ 		changed = x0 != (x0 = getWidth() / 2 - (field.getWidth() * k / 2) ) ? true : changed;
+ 		changed = y0 != (y0 = getHeight() / 2 - (field.getHeight() * k / 2) ) ? true : changed;
 	    
-	    float x0 = getWidth() / 2 - (field.getWidth() * k / 2);
-	    float y0 = getHeight() / 2 - (field.getHeight() * k / 2);
+// 		if ( changed ) {
+ 			mapper.drawAtlas(cnv, getWidth(), getHeight());
+// 		}
 	    
-	    // Painting dark cells
-        cnv.beginPath();
-        cnv.fillColor(new Color(0, 0, 0));
-	    for (int i = 0; i < field.getWidth(); i++)
-	    for (int j = 0; j < field.getHeight(); j++)
-	    {
-	        if (!field.getCell(i, j))
-	        {
-		        cnv.rect(x0 + i * k, y0 + j * k, k, k);
-	        }
-	    }
-        cnv.fill();
+//	    // Painting lines between cells
+//      cnv.beginPath();
+//      cnv.strokeColor(new Color(64, 64, 64, 255));
+//      if (k > 8)
+//      {
+//		    for (int i = 0; i < field.getWidth(); i++)
+//		    for (int j = 0; j < field.getHeight(); j++)
+//		    {
+//		        cnv.rect(x0 + i * k, y0 + j * k, k, k);
+//		    }
+//      }
+//      cnv.stroke();
 
 	    // Painting light cells
         cnv.beginPath();
@@ -137,20 +150,6 @@ public class LifeMainWindow extends Window {
 	        }
 	    }
         cnv.fill();
-
-	    
-	    // Painting lines between cells
-        cnv.beginPath();
-        cnv.strokeColor(new Color(64, 64, 64, 255));
-        if (k > 8)
-        {
-		    for (int i = 0; i < field.getWidth(); i++)
-		    for (int j = 0; j < field.getHeight(); j++)
-		    {
-		        cnv.rect(x0 + i * k, y0 + j * k, k, k);
-		    }
-        }
-        cnv.stroke();
 	    
 	    if (mouseI >= 0 && mouseI < field.getWidth() && mouseJ >= 0 && mouseJ < field.getHeight())
 	    {
