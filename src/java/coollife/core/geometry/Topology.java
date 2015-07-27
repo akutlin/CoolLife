@@ -61,8 +61,7 @@ public abstract class Topology {
 		}
 		
 		double[] realInitialConditions = BoundaryConditionProblem.convertToInitialConditianProblem(eq, left, right);	
-		path.setState(realInitialConditions);
-		return integrator.integrate(1000, path, 0, 1);
+		return getPathLength( realInitialConditions, 0, 1);
 				
 	}
 	

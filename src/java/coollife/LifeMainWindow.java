@@ -25,7 +25,7 @@ public class LifeMainWindow extends Window {
 
 	public LifeMainWindow() {
 		super (APPNAME, 600, 400, new Color(0.2f, 0.2f, 0.2f, 1.0f));
-		field = new Cells(50, 35);
+		field = new Cells(60, 40);
 		thor = new DigitalFlatSquareThor(field.getWidth(), field.getHeight());
 		mapper = new DigitalFlatSquareThorMapper( thor );
 	}
@@ -124,19 +124,6 @@ public class LifeMainWindow extends Window {
 // 		if ( changed ) {
  			mapper.drawAtlas(cnv, getWidth(), getHeight());
 // 		}
-	    
-//	    // Painting lines between cells
-//      cnv.beginPath();
-//      cnv.strokeColor(new Color(64, 64, 64, 255));
-//      if (k > 8)
-//      {
-//		    for (int i = 0; i < field.getWidth(); i++)
-//		    for (int j = 0; j < field.getHeight(); j++)
-//		    {
-//		        cnv.rect(x0 + i * k, y0 + j * k, k, k);
-//		    }
-//      }
-//      cnv.stroke();
 
 	    // Painting light cells
         cnv.beginPath();
