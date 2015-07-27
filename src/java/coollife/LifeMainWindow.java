@@ -5,7 +5,10 @@ import coollife.classicalConwayModel.DigitalFlatSquareThorMapper;
 import firststep.Canvas;
 import firststep.Color;
 import firststep.DoubleXY;
+import firststep.Image;
+import firststep.Paint;
 import firststep.Window;
+import firststep.Framebuffer;
 
 
 public class LifeMainWindow extends Window {
@@ -111,6 +114,9 @@ public class LifeMainWindow extends Window {
 	}
 	
 	private long frameIndex = 0;
+
+	Framebuffer fontFB;
+	Paint fbPaint;
 	
 	@Override
 	protected void frame(Canvas cnv) {
@@ -120,10 +126,22 @@ public class LifeMainWindow extends Window {
  		changed = k != (k = calcScale(getWidth(), getHeight()));
  		changed = x0 != (x0 = getWidth() / 2 - (field.getWidth() * k / 2) ) ? true : changed;
  		changed = y0 != (y0 = getHeight() / 2 - (field.getHeight() * k / 2) ) ? true : changed;
-	    
-// 		if ( changed ) {
+ 		
+ 		if ( changed ) {
+ 			fontFB = cnv.createFramebuffer(getWidth(), getHeight(), Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));
+ 			fontFB.beginDrawing(1.0f);
  			mapper.drawAtlas(cnv, getWidth(), getHeight());
-// 		}
+ 			fontFB.endDrawing();
+ 			fbPaint = cnv.imagePattern(0, 0, getWidth(), getHeight(), 0.f, fontFB.getImage(), 1.0f);
+ 		}
+ 		
+		Framebuffer mainFb = cnv.getMainFramebuffer(); 
+		mainFb.beginDrawing(1.0f);
+		
+		cnv.beginPath();
+		cnv.rect(0, 0, getWidth(), getHeight());
+		cnv.fillPaint(fbPaint);
+		cnv.fill();
 
 	    // Painting light cells
         cnv.beginPath();
@@ -151,6 +169,8 @@ public class LifeMainWindow extends Window {
 		}
 		frameIndex ++;
 		cellUnderMouse(getWidth(), getHeight());
+		
+		mainFb.endDrawing();
 	}
 	
 }
