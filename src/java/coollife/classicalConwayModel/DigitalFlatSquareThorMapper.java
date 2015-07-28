@@ -11,7 +11,7 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
 	private float k, x0, y0;
 	
 	public DigitalFlatSquareThorMapper( DigitalFlatSquareThor tp ) {
-		super(tp, null);
+		super(tp);
 		size = tp.getSize();
 	}
 	
@@ -62,11 +62,4 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
 		}
 		
 	}
-
-	@Override
-	public void update(DoubleXY pos) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

@@ -8,18 +8,13 @@ import firststep.DoubleXY;
 public abstract class VisualMapper {
 		
 	protected Topology tp; 
-	protected Biosphere bio;
-	
-	public VisualMapper( Topology tp, Biosphere bio) {
-		this.tp = tp;
-		this.bio = bio;
-	}
 	
 	protected abstract void mapIt( double[] p, DoubleXY pos );
-	
 	public abstract void drawAtlas(Canvas cnv, int winWidth, int winHeight);
-
-	public abstract void update(DoubleXY pos);
+	
+	public VisualMapper( Topology tp ) {
+		this.tp = tp;
+	}
 	
 	protected void drawGeodesic( Canvas cnv, Color c, double[] p, double[] v, double length, double step ) {
 		
