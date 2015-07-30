@@ -50,7 +50,7 @@ public class TopologyTest {
 	public void getDistanceOnSphere2D() {
 		
 		int dim = 2;
-		double radius = 1;
+		final double radius = 1;
 		
 		Topology sphere2D = new Topology(dim) {
 			
@@ -102,7 +102,7 @@ public class TopologyTest {
 	public void getDistanceOnSphere2DSpecialPoint() {
 		
 		int dim = 2;
-		double radius = 1;
+		final double radius = 1;
 		
 		Topology sphere2D = new Topology(dim) {
 			
@@ -197,7 +197,7 @@ public class TopologyTest {
 	public void translateOnSphere2D() {
 		
 		int dim = 2;
-		double radius = 1;
+		final double radius = 1;
 		
 		Topology sphere2D = new Topology(dim) {
 			

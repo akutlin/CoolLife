@@ -1,0 +1,72 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+/*******************/
+/** Default build **/
+/*******************/
+
+jar {
+    baseName = 'coollife'
+    version =  '0.1'
+}
+
+task firststep(type: Copy) {
+    from zipTree(file('firststep/firststep.zip'))
+    into file("${buildDir}/libs/firststep")
+}
+compileJava.dependsOn firststep
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}
+
+dependencies {
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.5+'
+    compile files("${buildDir}/libs/firststep/firststep-java.jar")
+}
+
+/****************/
+/** JUnit Test **/
+/****************/
+
+sourceSets {
+    test {
+        java {
+            srcDir 'test'
+        }
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+test {
+    systemProperty "java.library.path", "${buildDir}/libs/firststep"
+    testLogging {
+        events "failed", "skipped", "passed"
+        exceptionFormat "short"
+    }
+}
+
+/*****************/
+/** Default run **/
+/*****************/
+
+mainClassName = 'coollife.Main'
+
+run {
+    systemProperty "java.library.path", "${buildDir}/libs/firststep"
+    jvmArgs "-XstartOnFirstThread"
+}
