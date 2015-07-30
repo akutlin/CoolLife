@@ -62,18 +62,13 @@ public class DigitalFlatSquareThor extends Topology {
 	public void transform(double[] r) {
 		defaultCheckSanity( r , dim );
 		while (r[0] < 0) r[0] += xMax;
-		r[0] = r[0] == xMax ? r[0] : Math.round( r[0] % xMax );
+		r[0] = Math.round( r[0] % xMax );
 		while (r[1] < 0) r[1] += yMax;
-		r[1] = r[1] == yMax ? r[1] : Math.round( r[1] % yMax );
+		r[1] = Math.round( r[1] % yMax );
 	}
 	
 	@Override
 	public double getDistance( double[] p1, double p2[]) {
-		p1[0] = p1[0] == xMax ? 0 : p1[0];
-		p1[1] = p1[1] == yMax ? 0 : p1[1];
-		p2[0] = p2[0] == xMax ? 0 : p2[0];
-		p2[1] = p2[1] == yMax ? 0 : p2[1];
-
 		transform(p1);
 		transform(p2);
 		double[] delta = new double[]{ Math.abs( p2[0] - p1[0] ), Math.abs( p2[1] - p1[1] )};

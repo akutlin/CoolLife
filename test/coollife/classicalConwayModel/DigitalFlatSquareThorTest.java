@@ -55,7 +55,7 @@ public class DigitalFlatSquareThorTest {
 		p = new double[] { 0, 200 };
 		testObject.transform(p);
 		assertEquals( 0, p[0], 0);
-		assertEquals( 200, p[1], 0);
+		assertEquals( 0, p[1], 0);
 	}
 	
 	@Test
