@@ -4,14 +4,14 @@ import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.MaxCountExceededException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 
-import coollife.core.geometry.Topology;
+import coollife.core.geometry.AbstractTopology;
 
 public class GeodesicEquation implements FirstOrderDifferentialEquations {
 
 	private final int equationDim; 
-	private Topology space;
+	private AbstractTopology space;
 	
-	public GeodesicEquation( Topology space ){
+	public GeodesicEquation( AbstractTopology space ){
 		equationDim = 2 * space.getDimension();
 		this.space = space;
 	}

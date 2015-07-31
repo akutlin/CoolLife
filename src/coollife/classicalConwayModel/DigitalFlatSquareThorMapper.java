@@ -1,6 +1,8 @@
 package coollife.classicalConwayModel;
 
-import coollife.VisualMapper;
+import coollife.core.bio.Animate;
+import coollife.core.bio.Biosphere;
+import coollife.core.mapper.VisualMapper;
 import firststep.Canvas;
 import firststep.Color;
 import firststep.DoubleXY;
@@ -10,10 +12,15 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
 	private final int[] size;
 	private Canvas cnv;
 	private float k, x0, y0;
+	private Map[] maps = new Map[4];
 	
-	public DigitalFlatSquareThorMapper( DigitalFlatSquareThor tp ) {
-		super(tp);
+	public DigitalFlatSquareThorMapper( DigitalFlatSquareThor tp, Biosphere sph ) {
+		super(tp, sph);
 		size = tp.getSize();
+		maps[0] = new FirstMap();
+		maps[1] = new SecondMap();
+		maps[2] = new ThirdMap();
+		maps[3] = new FourthMap();
 	}
 	
 	private void fillFrameSize(int winWidth, int winHeight) {
@@ -78,7 +85,7 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
 		}
 
 		@Override
-		protected void it(double[] p, DoubleXY pos) {
+		public void it(double[] p, DoubleXY pos) {
 			tp.transform(p);
 			if ( p[0] >= X0 && p[1] <= Y0 + hight ) { 
 				pos.setX(x0 + k * p[0]);
@@ -98,7 +105,7 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
 		}
 
 		@Override
-		protected void it(double[] p, DoubleXY pos) {
+		public void it(double[] p, DoubleXY pos) {
 			tp.transform(p);
 			if ( p[0] <= width &&
 					p[1] <= hight ) { 
@@ -116,7 +123,7 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
 		}
 
 		@Override
-		protected void it(double[] p, DoubleXY pos) {
+		public void it(double[] p, DoubleXY pos) {
 			tp.transform(p);
 			if ( p[0] <= width && p[1] >= Y0 ) { 
 				pos.setX(x0 + k * p[0]);
@@ -136,7 +143,7 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
 		}
 
 		@Override
-		protected void it(double[] p, DoubleXY pos) {
+		public void it(double[] p, DoubleXY pos) {
 			tp.transform(p);
 			if ( p[0] >= X0 && p[1] >= Y0 ) { 
 				pos.setX(x0 + k * p[0]);
@@ -168,10 +175,39 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
         cnv.rect(x0, y0, k * size[0], k * size[1]);
         cnv.fill();
 		
-        new FirstMap().drawMap();
-        new SecondMap().drawMap();
-        new ThirdMap().drawMap();
-        new FourthMap().drawMap();
+        maps[0].drawMap();
+        maps[1].drawMap();
+        maps[2].drawMap();
+        maps[3].drawMap();
+		
+	}
+
+	@Override
+	public void drawBiosphere(Canvas cnv, int winWidth, int winHeight) {
+		for ( Animate a : sph.getAnimatePool() ) {
+			double[] p = a.getPosition();
+			DoubleXY pos = new DoubleXY(0,0);
+			int count = 0;
+			for ( Map map : maps) {
+				try {
+					map.it(p, pos);
+				} catch ( RuntimeException ex) {
+					count++ ;
+				}
+			}
+			//if (count != 3) throw new RuntimeException( Integer.toString(count) );
+			
+			cnv.beginPath();
+	        cnv.fillColor(new Color( 0, 0, 255));
+	        cnv.rect((float)pos.getX(), (float)pos.getY(), k, k);
+	        cnv.fill();
+			
+		}
+	}
+
+	@Override
+	public void preparePosition(DoubleXY pos) {
+		// TODO Auto-generated method stub
 		
 	}
 }

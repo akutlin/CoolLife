@@ -1,5 +1,6 @@
-package coollife;
+package coollife.core.mapper;
 
+import coollife.core.bio.Biosphere;
 import coollife.core.geometry.Topology;
 import firststep.Canvas;
 import firststep.Color;
@@ -8,11 +9,17 @@ import firststep.DoubleXY;
 public abstract class VisualMapper {
 		
 	protected final Topology tp;
+	protected final Biosphere sph;
 	
+	public Biosphere getBiosphere() { return sph; }
+		
 	public abstract void drawAtlas(Canvas cnv, int winWidth, int winHeight);
+	public abstract void drawBiosphere(Canvas cnv, int winWidth, int winHeight);
+	public abstract void preparePosition(DoubleXY pos);
 	
-	public VisualMapper( Topology tp ) {
+	public VisualMapper( Topology tp, Biosphere sph ) {
 		this.tp = tp;
+		this.sph = sph;
 	}
 	
 	protected abstract class Map {
@@ -24,7 +31,7 @@ public abstract class VisualMapper {
 			this.relativeSize = relativeSize;
 		}
 		
-		protected abstract void it( double[] p, DoubleXY pos ) throws MapMismatchException;
+		public abstract void it( double[] p, DoubleXY pos ) throws MapMismatchException;
 		public abstract void drawMap();
 		
 		protected void drawGeodesic( Canvas cnv, Color c, double[] p, double[] v, double length, double step) {

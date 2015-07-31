@@ -1,4 +1,4 @@
-package coollife;
+package coollife.core.bio;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,15 +9,18 @@ import java.util.Set;
 public class Biosphere {
 	
 	private Set<Animate> animatePool;
-	private final Map<Integer, Set<Animate>> history = new HashMap<>();
+	private final Map<Integer, Set<? extends Animate>> history = new HashMap<>();
 	
-	private void addAnimate( Animate a ) {
+	private void updateAnimates( Animate a ) {
 		synchronized(animatePool) {
-			animatePool.add(a);
+			if ( animatePool.contains(a) )
+				animatePool.remove(a);
+			else 
+				animatePool.add(a);
 		}
 	}
-	
-	private void updateHistory(Set<Animate> pool) {
+		
+	private void updateHistory(Set<? extends Animate> pool) {
 		synchronized(history) {
 			int count = history.size();
 			history.put(count, pool);
@@ -27,21 +30,20 @@ public class Biosphere {
 	public Biosphere( Animate... animate ) {
 		animatePool = new HashSet<>();
 		for (Animate a : animate) {
-			addAnimate(a);
+			updateAnimates(a);
 		}
-		updateHistory(animatePool);
 	}
 	
 	public synchronized void turn() {
-		animatePool = new HashSet<>();
 		synchronized(animatePool) {
-			for ( Animate e : history.get(history.size()) ) {
-				Animate newborn = e.evolve(Collections.unmodifiableMap(history));
-				if (newborn != null) animatePool.add(newborn);
+			updateHistory(animatePool);
+			animatePool = new HashSet<>();
+			for ( Animate e : history.get(history.size() - 1) ) {
+				Set<? extends Animate> newborns = e.evolve(Collections.unmodifiableMap(history));
 				if (e.isAlive()) animatePool.add(e);
+				if (newborns != null) animatePool.addAll(newborns);
 			}
 		}
-		updateHistory(animatePool);
 	}
 	
 	public Set<Animate> getAnimatePool() {

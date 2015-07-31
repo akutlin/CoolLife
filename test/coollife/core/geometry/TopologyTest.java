@@ -14,7 +14,7 @@ public class TopologyTest {
 		
 		for (int dim = 1; dim < maxDim; dim++) {
 			
-			Topology euqlideanSpace = new Topology(dim) {
+			AbstractTopology euqlideanSpace = new AbstractTopology(dim) {
 
 				@Override
 				public double[][][] getChristoffelSymbolOfTheFirstKind(
@@ -33,7 +33,7 @@ public class TopologyTest {
 				public void transform(double[] r) {}
 
 				@Override
-				protected double getSeed(double[] p) {
+				public double getSeed(double[] p) {
 					return Double.POSITIVE_INFINITY;
 				}	
 			};
@@ -52,7 +52,7 @@ public class TopologyTest {
 		int dim = 2;
 		final double radius = 1;
 		
-		Topology sphere2D = new Topology(dim) {
+		AbstractTopology sphere2D = new AbstractTopology(dim) {
 			
 			//Coordinates: fi and teta
 			
@@ -87,7 +87,7 @@ public class TopologyTest {
 			}
 
 			@Override
-			protected double getSeed(double[] p) {
+			public double getSeed(double[] p) {
 				return r / 10;
 			}	
 		};
@@ -104,7 +104,7 @@ public class TopologyTest {
 		int dim = 2;
 		final double radius = 1;
 		
-		Topology sphere2D = new Topology(dim) {
+		AbstractTopology sphere2D = new AbstractTopology(dim) {
 			
 			//Coordinates: fi and teta
 			
@@ -139,7 +139,7 @@ public class TopologyTest {
 			}
 
 			@Override
-			protected double getSeed(double[] p) {
+			public double getSeed(double[] p) {
 				return r / 10;
 			}	
 		};
@@ -156,7 +156,7 @@ public class TopologyTest {
 		
 		for (int dim = 1; dim < maxDim; dim++) {
 			
-			Topology euqlideanSpace = new Topology(dim) {
+			AbstractTopology euqlideanSpace = new AbstractTopology(dim) {
 
 				@Override
 				public double[][][] getChristoffelSymbolOfTheFirstKind(
@@ -175,7 +175,7 @@ public class TopologyTest {
 				public void transform(double[] r) {}
 
 				@Override
-				protected double getSeed(double[] p) {
+				public double getSeed(double[] p) {
 					return Double.POSITIVE_INFINITY;
 				}	
 			};
@@ -199,7 +199,7 @@ public class TopologyTest {
 		int dim = 2;
 		final double radius = 1;
 		
-		Topology sphere2D = new Topology(dim) {
+		AbstractTopology sphere2D = new AbstractTopology(dim) {
 			
 			//Coordinates: fi and teta
 			
@@ -234,7 +234,7 @@ public class TopologyTest {
 			}
 
 			@Override
-			protected double getSeed(double[] p) {
+			public double getSeed(double[] p) {
 				return r / 10;
 			}	
 		};

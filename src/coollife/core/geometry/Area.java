@@ -2,8 +2,8 @@ package coollife.core.geometry;
 
 public interface Area {
 	
-	Area substruct( Area a );
-	Area intersection( Area a );
-	boolean isEmpty();
-
+	public Area substruct( Area a );
+	public Area intersect( Area a );
+	public Area associate( Area a );
+	public boolean isEmpty();
 }

@@ -1,8 +1,8 @@
 package coollife.classicalConwayModel;
 
-import coollife.core.geometry.Topology;
+import coollife.core.geometry.AbstractTopology;
 
-public class DigitalFlatSquareThor extends Topology {
+public class DigitalFlatSquareThor extends AbstractTopology {
 	
 	private final int xMax, yMax;
 	
@@ -51,7 +51,7 @@ public class DigitalFlatSquareThor extends Topology {
 	}
 	
 	@Override
-	protected double getSeed(double[] p) {
+	public double getSeed(double[] p) {
 		return 1;
 	}
 	
