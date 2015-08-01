@@ -13,7 +13,7 @@ import coollife.core.geometry.Area;
 
 public class ClassicalConwayAnimal extends AbstractAnimate {
 
-	public ClassicalConwayAnimal(double[] p) {
+	public ClassicalConwayAnimal(double... p) {
 		super(p);
 	}
 
@@ -51,7 +51,8 @@ public class ClassicalConwayAnimal extends AbstractAnimate {
 		}
 		
 		for (Animate a : (HashSet<Animate>) newBorns.clone() )
-			if ( current.contains(a) )
+			if ( current.contains(a) || 
+					tp.getDistance( position, a.getPosition() ) > 1 )
 				newBorns.remove(a);
 		
 		return newBorns;

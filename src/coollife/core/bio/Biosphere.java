@@ -11,19 +11,12 @@ public class Biosphere {
 	private Set<Animate> animatePool;
 	private final Map<Integer, Set<? extends Animate>> history = new HashMap<>();
 	
-	private void updateAnimates( Animate a ) {
+	public void updateAnimates( Animate a ) {
 		synchronized(animatePool) {
 			if ( animatePool.contains(a) )
 				animatePool.remove(a);
 			else 
 				animatePool.add(a);
-		}
-	}
-		
-	private void updateHistory(Set<? extends Animate> pool) {
-		synchronized(history) {
-			int count = history.size();
-			history.put(count, pool);
 		}
 	}
 
@@ -49,6 +42,13 @@ public class Biosphere {
 	public Set<Animate> getAnimatePool() {
 		synchronized(animatePool) {
 			return Collections.unmodifiableSet(animatePool);
+		}
+	}
+	
+	private void updateHistory(Set<? extends Animate> pool) {
+		synchronized(history) {
+			int count = history.size();
+			history.put(count, pool);
 		}
 	}
 

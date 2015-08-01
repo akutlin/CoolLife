@@ -2,12 +2,12 @@ package coollife.classicalConwayModel;
 
 import coollife.core.bio.Animate;
 import coollife.core.bio.Biosphere;
-import coollife.core.mapper.VisualMapper;
+import coollife.core.mapper.AbstractVisualMapper;
 import firststep.Canvas;
 import firststep.Color;
 import firststep.DoubleXY;
 
-public class DigitalFlatSquareThorMapper extends VisualMapper {
+public class DigitalFlatSquareThorMapper extends AbstractVisualMapper {
 	
 	private final int[] size;
 	private Canvas cnv;
@@ -184,30 +184,47 @@ public class DigitalFlatSquareThorMapper extends VisualMapper {
 
 	@Override
 	public void drawBiosphere(Canvas cnv, int winWidth, int winHeight) {
+		
+		cnv.beginPath();
+		cnv.fillColor(new Color( 0, 0, 255));
+		
 		for ( Animate a : sph.getAnimatePool() ) {
 			double[] p = a.getPosition();
 			DoubleXY pos = new DoubleXY(0,0);
-			int count = 0;
 			for ( Map map : maps) {
 				try {
 					map.it(p, pos);
-				} catch ( RuntimeException ex) {
-					count++ ;
-				}
+					if ( pos.getX() < x0 + size[0] * k && pos.getY() < y0 + size[1] * k )
+						cnv.rect((float)pos.getX(), (float)pos.getY(), k, k);
+				} catch ( RuntimeException ex) {}
 			}
-			//if (count != 3) throw new RuntimeException( Integer.toString(count) );
-			
-			cnv.beginPath();
-	        cnv.fillColor(new Color( 0, 0, 255));
-	        cnv.rect((float)pos.getX(), (float)pos.getY(), k, k);
-	        cnv.fill();
-			
+		}
+		
+		cnv.fill();
+	}
+
+	@Override
+	public void preparePosition(DoubleXY pos, double[] p) {
+		double x = pos.getX();
+		double y = pos.getY();
+		if ( x > x0 && x < x0 + size[0] * k &&
+				y > y0 && y < y0 + size[1] * k ) {
+			p[0] = (x - x0) /k;
+			p[1] = (y - y0) /k;
+			tp.transform(p);
+		} else {
+			p[0] = Double.NaN;
+			p[1] = Double.NaN;
 		}
 	}
 
 	@Override
-	public void preparePosition(DoubleXY pos) {
-		// TODO Auto-generated method stub
-		
+	public void updatePosition(DoubleXY pos) {
+		double[] p = new double[2];
+		preparePosition( pos, p );
+		if ( p[0] != Double.NaN && p[1] != Double.NaN ) {
+			ClassicalConwayAnimal a = new ClassicalConwayAnimal( p[0], p[1] );
+			sph.updateAnimates(a);
+		}
 	}
 }

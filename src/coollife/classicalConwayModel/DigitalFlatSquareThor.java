@@ -62,9 +62,9 @@ public class DigitalFlatSquareThor extends AbstractTopology {
 	public void transform(double[] r) {
 		defaultCheckSanity( r , dim );
 		while (r[0] < 0) r[0] += xMax;
-		r[0] = Math.round( r[0] % xMax );
+		r[0] = (int)( r[0] % xMax );
 		while (r[1] < 0) r[1] += yMax;
-		r[1] = Math.round( r[1] % yMax );
+		r[1] = (int)( r[1] % yMax );
 	}
 	
 	@Override
