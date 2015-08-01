@@ -72,7 +72,9 @@ public class DigitalFlatSquareThor extends AbstractTopology {
 		transform(p1);
 		transform(p2);
 		double[] delta = new double[]{ Math.abs( p2[0] - p1[0] ), Math.abs( p2[1] - p1[1] )};
-		return delta[1] > delta[0] ? delta[1] : delta[0];
+		delta[0] = Math.min( delta[0], xMax - delta[0] );
+		delta[1] = Math.min( delta[1], yMax - delta[1] );
+		return Math.max(delta[0], delta[1]);
 	}
 	
 	@Override

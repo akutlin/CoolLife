@@ -69,6 +69,10 @@ public class DigitalFlatSquareThorTest {
 		assertEquals( 0 ,testObject.getDistance(
 				new double[] { 0, 0 }, 
 				new double[] { 100, 200 }) , 0.0000000000001);
+		
+		assertEquals( 20 ,testObject.getDistance(
+				new double[] { 30, 10 }, 
+				new double[] { 40, 190 }) , 0.0000000000001);
 	}
 	
 	@Test

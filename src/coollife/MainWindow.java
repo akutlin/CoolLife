@@ -1,5 +1,10 @@
 package coollife;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import coollife.classicalConwayModel.ClassicalConwayAnimal;
+import coollife.core.bio.Biosphere;
 import coollife.core.mapper.VisualMapper;
 import firststep.Canvas;
 import firststep.Color;
@@ -16,10 +21,12 @@ public class MainWindow extends Window {
 	private boolean isPaused;
 	private boolean isDown;
     private VisualMapper mapper;
+    private Biosphere bio;
 
-	public MainWindow( VisualMapper mapper ) {
+	public MainWindow( VisualMapper mapper, Biosphere bio ) {
 		super (APPNAME, 600, 400, new Color(0.2f, 0.2f, 0.2f, 1.0f));
 		this.mapper = mapper;
+		this.bio = bio;
 	}
 	
 	@Override
@@ -36,8 +43,10 @@ public class MainWindow extends Window {
 	public void mouseButton(MouseButton button, MouseButtonState state, Modifiers modifiers) {
 	    if (button == MouseButton.LEFT && state == MouseButtonState.PRESS)
 	    	isDown = true;
-	    if (button == MouseButton.LEFT && state == MouseButtonState.RELEASE)
+	    if (button == MouseButton.LEFT && state == MouseButtonState.RELEASE) {
 	    	isDown = false;
+	    	points = new ArrayList<>();
+	    }
 	}
 	
 	private void updateTitle() {
@@ -51,6 +60,7 @@ public class MainWindow extends Window {
 	int winHeight = 0;
 	Framebuffer fontFB;
 	Paint fbPaint;
+	List<double[]> points = new ArrayList<>();
 	
 	@Override
 	protected void frame(Canvas cnv) {
@@ -78,11 +88,29 @@ public class MainWindow extends Window {
 		cnv.fillPaint(fbPaint);
 		cnv.fill();
 		
-		mapper.drawBiosphere(cnv, winWidth, winHeight);
+		mapper.drawBiosphere(cnv, winWidth, winHeight, bio.getAnimatePool());
 		if ( !isPaused )
-			mapper.getBiosphere().turn();
-		if ( isDown )
-			mapper.updatePosition( getCursorPos() );
+			bio.turn();
+		if ( isDown ) {
+			List<double[]> newPoints = mapper.preparePosition( getCursorPos() );
+			boolean equals = true;
+			for ( double[] p1 : newPoints ) {
+				boolean local = false;
+				for ( double[] p2 : points ) {
+					if ( p1[0] == p2[0] && p1[1] == p2[1] ) {
+						local = true; break;
+					}
+				}
+				if (local == false) {
+					equals = false; break;
+				}
+			}
+			if (!equals) {
+				for ( double[] p : newPoints )
+					bio.updateAnimates( new ClassicalConwayAnimal( p[0], p[1] ) );
+			}
+			points = newPoints;
+		}
 		
 		mainFb.endDrawing();
 	}

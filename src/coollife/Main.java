@@ -16,9 +16,9 @@ public class Main {
 		DigitalFlatSquareThor tor = new DigitalFlatSquareThor( 60, 40 );
 		ClassicalConwayAnimal.setTopology(tor);
 		Biosphere sph = new Biosphere();
-		VisualMapper conway = new DigitalFlatSquareThorMapper( tor, sph );
+		VisualMapper conway = new DigitalFlatSquareThorMapper( tor );
 		
-		MainWindow mainWindow = new MainWindow( conway );
+		MainWindow mainWindow = new MainWindow( conway, sph );
 		MainWindow.loop(fps);
 	}
 

@@ -71,8 +71,11 @@ public class ClassicalConwayAnimal extends AbstractAnimate {
 			double[] pos = getPosition();
 			HashSet<double[]> region = new HashSet<>();
 			for ( int i = -1; i < 2; i++)
-				for ( int j = -1; j < 2; j++)
-					region.add( new double[]{ pos[0] + i, pos[1] + j});;
+				for ( int j = -1; j < 2; j++) {
+					double[] p = new double[]{ pos[0] + i, pos[1] + j};
+					tp.transform(p);
+					region.add( p );
+				}
 			this.region = region;
 		}
 		

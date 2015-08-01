@@ -1,7 +1,10 @@
 package coollife.classicalConwayModel;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import coollife.core.bio.Animate;
-import coollife.core.bio.Biosphere;
 import coollife.core.mapper.AbstractVisualMapper;
 import firststep.Canvas;
 import firststep.Color;
@@ -14,8 +17,8 @@ public class DigitalFlatSquareThorMapper extends AbstractVisualMapper {
 	private float k, x0, y0;
 	private Map[] maps = new Map[4];
 	
-	public DigitalFlatSquareThorMapper( DigitalFlatSquareThor tp, Biosphere sph ) {
-		super(tp, sph);
+	public DigitalFlatSquareThorMapper( DigitalFlatSquareThor tp ) {
+		super(tp);
 		size = tp.getSize();
 		maps[0] = new FirstMap();
 		maps[1] = new SecondMap();
@@ -183,48 +186,47 @@ public class DigitalFlatSquareThorMapper extends AbstractVisualMapper {
 	}
 
 	@Override
-	public void drawBiosphere(Canvas cnv, int winWidth, int winHeight) {
+	public void drawBiosphere(Canvas cnv, int winWidth, int winHeight, Set<Animate> pool) {
 		
 		cnv.beginPath();
 		cnv.fillColor(new Color( 0, 0, 255));
 		
-		for ( Animate a : sph.getAnimatePool() ) {
-			double[] p = a.getPosition();
-			DoubleXY pos = new DoubleXY(0,0);
-			for ( Map map : maps) {
-				try {
-					map.it(p, pos);
-					if ( pos.getX() < x0 + size[0] * k && pos.getY() < y0 + size[1] * k )
-						cnv.rect((float)pos.getX(), (float)pos.getY(), k, k);
-				} catch ( RuntimeException ex) {}
-			}
+		for ( Animate a : pool ) {
+			for( DoubleXY pos : preparePoint( a.getPosition() ) )
+				if ( pos.getX() < x0 + size[0] * k && pos.getY() < y0 + size[1] * k )
+				cnv.rect((float)pos.getX(), (float)pos.getY(), k, k);
 		}
 		
 		cnv.fill();
 	}
 
 	@Override
-	public void preparePosition(DoubleXY pos, double[] p) {
+	public List<double[]> preparePosition(DoubleXY pos) {
 		double x = pos.getX();
 		double y = pos.getY();
+		List<double[]> arr = new ArrayList<>();
 		if ( x > x0 && x < x0 + size[0] * k &&
 				y > y0 && y < y0 + size[1] * k ) {
+			double[] p = new double[2];
 			p[0] = (x - x0) /k;
 			p[1] = (y - y0) /k;
 			tp.transform(p);
-		} else {
-			p[0] = Double.NaN;
-			p[1] = Double.NaN;
+			arr.add(p);
 		}
+		return arr;
 	}
 
 	@Override
-	public void updatePosition(DoubleXY pos) {
-		double[] p = new double[2];
-		preparePosition( pos, p );
-		if ( p[0] != Double.NaN && p[1] != Double.NaN ) {
-			ClassicalConwayAnimal a = new ClassicalConwayAnimal( p[0], p[1] );
-			sph.updateAnimates(a);
+	public List<DoubleXY> preparePoint(double[] p) {
+		tp.transform(p);
+		List<DoubleXY> arr = new ArrayList<>();
+		for ( Map map : maps) {
+			try {
+				DoubleXY pos = new DoubleXY(0,0);
+				map.it(p, pos);
+				arr.add(pos);
+			} catch ( RuntimeException ex) {}
 		}
+		return arr;
 	}
 }

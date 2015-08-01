@@ -1,6 +1,5 @@
 package coollife.core.mapper;
 
-import coollife.core.bio.Biosphere;
 import coollife.core.geometry.Topology;
 import firststep.Canvas;
 import firststep.Color;
@@ -9,14 +8,9 @@ import firststep.DoubleXY;
 public abstract class AbstractVisualMapper implements VisualMapper {
 		
 	protected final Topology tp;
-	protected final Biosphere sph;
-	
-	@Override
-	public Biosphere getBiosphere() { return sph; }
-	
-	public AbstractVisualMapper( Topology tp, Biosphere sph ) {
+		
+	public AbstractVisualMapper( Topology tp ) {
 		this.tp = tp;
-		this.sph = sph;
 	}
 	
 	protected abstract class Map {
