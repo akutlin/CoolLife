@@ -3,6 +3,7 @@ package coollife.classicalConwayModel;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,11 +66,11 @@ public class ClassicalConwayAnimal extends AbstractAnimate {
 	
 	private class Region extends AbstractArea {
 		
-		private final HashSet<double[]> region;
+		private final LinkedHashSet<double[]> region;
 		
 		public Region() {
 			double[] pos = getPosition();
-			HashSet<double[]> region = new HashSet<>();
+			LinkedHashSet<double[]> region = new LinkedHashSet<>();
 			for ( int i = -1; i < 2; i++)
 				for ( int j = -1; j < 2; j++) {
 					double[] p = new double[]{ pos[0] + i, pos[1] + j};
@@ -79,7 +80,7 @@ public class ClassicalConwayAnimal extends AbstractAnimate {
 			this.region = region;
 		}
 		
-		private Region( HashSet<double[]> region ) {
+		private Region( LinkedHashSet<double[]> region ) {
 			this.region = region;
 		}
 
@@ -87,7 +88,7 @@ public class ClassicalConwayAnimal extends AbstractAnimate {
 		@Override
 		public Area substruct(Area a) {
 			if ( a instanceof Region ) {
-				HashSet<double[]> region = (HashSet<double[]>) this.region.clone();
+				LinkedHashSet<double[]> region = (LinkedHashSet<double[]>) this.region.clone();
 				for ( double[] p1 : this.region )
 					for ( double[] p2 : ((Region)a).region )
 						if ( p1[0] == p2[0] && p1[1] == p2[1])
@@ -100,7 +101,7 @@ public class ClassicalConwayAnimal extends AbstractAnimate {
 		@Override
 		public Area intersect(Area a) {
 			if ( a instanceof Region ) {
-				HashSet<double[]> region = new HashSet<>();
+				LinkedHashSet<double[]> region = new LinkedHashSet<>();
 				for ( double[] p1 : this.region ) {
 					for ( double[] p2 : ((Region)a).region )
 						if ( p1[0] == p2[0] && p1[1] == p2[1])
@@ -115,7 +116,7 @@ public class ClassicalConwayAnimal extends AbstractAnimate {
 		@Override
 		public Area associate(Area a) {
 			if ( a instanceof Region ) {
-				HashSet<double[]> region = (HashSet<double[]>) this.region.clone();
+				LinkedHashSet<double[]> region = (LinkedHashSet<double[]>) this.region.clone();
 				for ( double[] p : ((Region)a).region )
 						region.add(p);
 				return new Region(region);

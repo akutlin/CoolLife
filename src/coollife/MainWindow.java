@@ -69,8 +69,8 @@ public class MainWindow extends Window {
 		
 		changed = winWidth != getWidth() || winHeight != getHeight() ? true : false;
 		
-		int winWidth = getWidth();
-		int winHeight = getHeight();
+		winWidth = getWidth();
+		winHeight = getHeight();
  		
  		if ( changed ) {
  			fontFB = cnv.createFramebuffer(winWidth, winHeight, Image.Flags.of(Image.Flag.REPEATX, Image.Flag.REPEATY));

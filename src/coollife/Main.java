@@ -15,7 +15,12 @@ public class Main {
 		
 		DigitalFlatSquareThor tor = new DigitalFlatSquareThor( 60, 40 );
 		ClassicalConwayAnimal.setTopology(tor);
-		Biosphere sph = new Biosphere();
+		
+		ClassicalConwayAnimal[] arr = new ClassicalConwayAnimal[60];
+		for ( int i = 0; i < 60; i++) 
+			arr[i] = new ClassicalConwayAnimal(i,20);
+		
+		Biosphere sph = new Biosphere(arr);
 		VisualMapper conway = new DigitalFlatSquareThorMapper( tor );
 		
 		MainWindow mainWindow = new MainWindow( conway, sph );
