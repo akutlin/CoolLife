@@ -10,6 +10,9 @@ public class Biosphere {
 	
 	private Set<Animate> animatePool;
 	private final Map<Integer, Set<? extends Animate>> history = new HashMap<>();
+	private int time = -1;
+	
+	public int getTime() { return time; }
 	
 	public void updateAnimates( Animate a ) {
 		synchronized(animatePool) {
@@ -47,8 +50,8 @@ public class Biosphere {
 	
 	private void updateHistory(Set<? extends Animate> pool) {
 		synchronized(history) {
-			int count = history.size();
-			history.put(count, pool);
+			time = history.size();
+			history.put(time, pool);
 		}
 	}
 

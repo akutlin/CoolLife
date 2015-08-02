@@ -24,7 +24,12 @@ public class Main {
 		VisualMapper conway = new DigitalFlatSquareThorMapper( tor );
 		
 		MainWindow mainWindow = new MainWindow( conway, sph );
+		
+		long initial = System.nanoTime();
 		MainWindow.loop(fps);
+		long delta = System.nanoTime() - initial;
+		double steps = sph.getTime();
+		System.out.println("Performance: " + steps * 1000000000 / delta + " step/sec" );
 	}
 
 }

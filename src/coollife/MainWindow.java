@@ -35,7 +35,6 @@ public class MainWindow extends Window {
 			close();
 		} else if (key == Key.SPACE && state == KeyState.PRESS) {
 			isPaused = !isPaused;
-	        updateTitle();
 	    }
 	}
 	
@@ -51,9 +50,9 @@ public class MainWindow extends Window {
 	
 	private void updateTitle() {
 	    if (isPaused)
-	    	setTitle(APPNAME + " [ Pause ]");
+	    	setTitle(APPNAME + " [ Pause ]: " + bio.getTime() );
 	    else
-	    	setTitle(APPNAME);
+	    	setTitle(APPNAME + ": " + bio.getTime() );
 	}
 	
 	int winWidth = 0;
@@ -111,7 +110,7 @@ public class MainWindow extends Window {
 			}
 			points = newPoints;
 		}
-		
+        updateTitle();
 		mainFb.endDrawing();
 	}
 	
