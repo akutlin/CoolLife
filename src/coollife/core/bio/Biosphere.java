@@ -30,15 +30,22 @@ public class Biosphere {
 		}
 	}
 	
-	public synchronized void turn() {
-		synchronized(animatePool) {
-			updateHistory(animatePool);
-			animatePool = new HashSet<>();
-			for ( Animate e : history.get(history.size() - 1) ) {
-				Set<? extends Animate> newborns = e.evolve(Collections.unmodifiableMap(history));
-				if (e.isAlive()) animatePool.add(e);
-				if (newborns != null) animatePool.addAll(newborns);
-			}
+	public void turn() {	
+		updateHistory(animatePool);
+		animatePool = new HashSet<>();
+		final Map<Integer, Set<? extends Animate>> snapshot = Collections.unmodifiableMap(history);
+		
+		for ( final Animate e : history.get(time) ) {
+			new Thread( new Runnable() {
+				@Override
+				public void run() {
+					Set<? extends Animate> newborns = e.evolve(snapshot);
+					synchronized(animatePool) {
+						if (e.isAlive()) animatePool.add(e);
+						if (newborns != null) animatePool.addAll(newborns);
+					}
+				}
+			} ).start();
 		}
 	}
 	
